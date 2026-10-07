@@ -20,7 +20,8 @@ Created for my research project at the **Minor Academy of Sciences of Ukraine (M
 
 2. **Quantum Gate Application:**
 
-$$U = \begin{pmatrix} u_{00} & u_{01} \\ u_{10} & u_{11} \end{pmatrix}$$
+$$U = \begin{bmatrix} u_{00} & u_{01} \\ 
+u_{10} & u_{11} \end{bmatrix}$$
 
 3. **Born's Rule:**
    $$P(\vert{}i\rangle) = \vert{}\alpha_i\vert{}^2 = \text{Re}(\alpha_i)^2 + \text{Im}(\alpha_i)^2$$
