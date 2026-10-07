@@ -3,7 +3,7 @@ A lightweight $N$-qubit quantum circuit simulator built from scratch using pure 
 
 I built this project to dive deep into quantum computing fundamentals—exploring how linear algebra, complex state vectors, and measurement probabilities actually work under the hood without relying on external high-level frameworks.
 
-Created for my research project at the **Minor Academy of Sciences of Ukraine (MAN)** and featured in my **MIT Maker Portfolio**. *(And yes, picking the [MIT License](LICENSE) was an absolute non-negotiable pun).*
+Created for my research project at the **Minor Academy of Sciences of Ukraine (MAN)** and featured in my **MIT Maker Portfolio**.
 
 ## What It Does
 * **$N$-Qubit State Register:** Dynamically allocates state vectors in $2^N$-dimensional Hilbert space using `std::complex<double>`.
