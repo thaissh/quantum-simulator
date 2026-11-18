@@ -102,6 +102,22 @@ void applyGate(StateVector& state, const Matrix& gate, int targetQubit, int tota
     }
 }
 
+//Apply CNOT gate(two-qubit operation)
+void applyCNOT(StateVector& state, int controlQubit, int targetQubit, int totalQubits) {
+    size_t stateSize = state.size();
+    
+    for (size_t i = 0; i < stateSize; i++) {
+        if ((i & (1ULL << controlQubit)) != 0) {
+            size_t pairedIndex = i ^ (1ULL << targetQubit);
+            
+            if (i < pairedIndex) {
+                Complex temp = state[i];
+                state[i] = state[pairedIndex];
+                state[pairedIndex] = temp;
+            }
+        }
+    }
+}
 void printState (const StateVector& state, int qubits) {
     std::cout << "\n Current state vector \n";
     for (size_t i = 0; i < state.size(); ++i) {
@@ -134,7 +150,8 @@ int main() {
         std::cout << "1. Apply Hadamard (H) gate\n";
         std::cout << "2. Apply Pauli-X (NOT) gate\n";
         std::cout << "3. Apply Pauli-Z (Phase) gate\n";
-        std::cout << "4. Show current state vector\n";
+        std::cout << "4. Apply CNOT gate (Entanglement)\n";
+        std::cout << "5. Show current state vector\n";
         std::cout << "0. Exit\n";
         std::cout << "Choose option: ";
 
@@ -151,12 +168,12 @@ int main() {
             int target;
             std::cout << "Enter target qubit index (0 to " << qubits - 1 << "): ";
             std::cin >> target;
-
+            
             if (target < 0 || target >= qubits) {
                 std::cout << "Invalid qubit index!\n";
                 continue;
             }
-
+            
             if (choice == 1) {
                 applyGate(myQubits, getGateH(), target, qubits);
             } else if (choice == 2) {
@@ -164,12 +181,31 @@ int main() {
             } else if (choice == 3) {
                 applyGate(myQubits, getGateZ(), target, qubits);
             }
-
+            else if (choice == 4) {
+                int control, target;
+                std::cout << "Enter control qubit index (0 to " << qubits - 1 << "):";
+                std::cin >> control;
+                std::cout << "Enter target qubit index (0 to " << qubits - 1 << "):";
+                std::cin >> target;
+                
+                if (control < 0 || control >= qubits || target < 0 || target >= qubits || control == target) {
+                    std::cout << "Invalid qubit indeces\n";
+                    continue;
+                }
+                
+                applyCNOT(myQubits, control, target, qubits);
+                printState(myQubits, qubits);
+            }
             printState(myQubits, qubits);
 
-        } else if (choice == 4) {
+        } else if (choice == 5) {
             printState(myQubits, qubits);
-        } else {
+        }
+         else if (choice == 0) {
+            running = false;
+            std::cout << "Exiting quantum simulator...\n";
+            }
+         else {
             std::cout << "Unknown option, try again.\n";
         }
     }
