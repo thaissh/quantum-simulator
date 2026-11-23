@@ -21,6 +21,7 @@ Language: C++17
 #include <vector>
 #include <complex>
 #include <cmath>
+#include <limits>
 
 //synonym for complex number (a+bi)
 using Complex = std::complex<double>;
@@ -118,13 +119,23 @@ void applyCNOT(StateVector& state, int controlQubit, int targetQubit, int totalQ
         }
     }
 }
-void printState (const StateVector& state, int qubits) {
-    std::cout << "\n Current state vector \n";
+void printState(const StateVector& state, int qubits) {
+    std::cout << "\nCurrent state vector:\n";
+    size_t limit = (qubits <= 10) ? state.size() : 32;
+    size_t printed = 0;
+    
     for (size_t i = 0; i < state.size(); ++i) {
         double prob = std::norm(state[i]);
+        if (qubits > 10 && prob < 1e-12) continue;
+
         std::cout << "State |" << toBinary(i, qubits) << "> : "
-        << "Ampl = " << state[i]
-        << " | Prob = " << prob * 100 << "%\n";
+                  << "Ampl = " << state[i]
+                  << " | Prob = " << prob * 100 << "%\n";
+
+        if (++printed >= limit && qubits > 10) {
+            std::cout << "... (output truncated for N > 10; showing first " << limit << " non-zero states)\n";
+            break;
+        }
     }
 }
 
@@ -134,8 +145,15 @@ int main() {
     //Enter qubit quantity
     int qubits;
     
-    std::cout << "Enter qubit quantity: ";
-    std::cin >> qubits;
+    while (true) {
+        std::cout << "Enter number of qubits (1 - 28): ";
+        if (std::cin >> qubits && qubits >= 1 && qubits <= 28) {
+            break;
+        }
+        std::cout << "Error: pleas enter an integer between 1 and 28.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     
     StateVector myQubits = CreateRegister(qubits);
     std::cout << "\n[INFO] Register for " << qubits << " qubits created successfully!\n";
@@ -153,27 +171,26 @@ int main() {
         std::cout << "4. Apply CNOT gate (Entanglement)\n";
         std::cout << "5. Show current state vector\n";
         std::cout << "0. Exit\n";
-        std::cout << "Choose option: ";
+        std::cout << "Choose option: \n";
 
         int choice;
         std::cin >> choice;
-
-        if (choice == 0) {
-            running = false;
-            std::cout << "Exiting quantum simulator...\n";
-            break;
+        
+        if (!(std::cin >> choice)) {
+            std::cout << "Invalid input.";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
         }
 
         if (choice >= 1 && choice <= 3) {
             int target;
             std::cout << "Enter target qubit index (0 to " << qubits - 1 << "): ";
             std::cin >> target;
-            
             if (target < 0 || target >= qubits) {
                 std::cout << "Invalid qubit index!\n";
                 continue;
             }
-            
             if (choice == 1) {
                 applyGate(myQubits, getGateH(), target, qubits);
             } else if (choice == 2) {
@@ -181,31 +198,30 @@ int main() {
             } else if (choice == 3) {
                 applyGate(myQubits, getGateZ(), target, qubits);
             }
-            else if (choice == 4) {
-                int control, target;
-                std::cout << "Enter control qubit index (0 to " << qubits - 1 << "):";
-                std::cin >> control;
-                std::cout << "Enter target qubit index (0 to " << qubits - 1 << "):";
-                std::cin >> target;
-                
-                if (control < 0 || control >= qubits || target < 0 || target >= qubits || control == target) {
-                    std::cout << "Invalid qubit indeces\n";
-                    continue;
-                }
-                
-                applyCNOT(myQubits, control, target, qubits);
-                printState(myQubits, qubits);
-            }
-            printState(myQubits, qubits);
-
-        } else if (choice == 5) {
             printState(myQubits, qubits);
         }
-         else if (choice == 0) {
+        else if (choice == 4) {
+            int control, target;
+            std::cout << "Enter control qubit index (0 to " << qubits - 1 << "): ";
+            std::cin >> control;
+            std::cout << "Enter target qubit index (0 to " << qubits - 1 << "): ";
+            std::cin >> target;
+            if (control < 0 || control >= qubits || target < 0 || target >= qubits || control == target) {
+                std::cout << "Invalid qubit indeces\n";
+                continue;
+            }
+            applyCNOT(myQubits, control, target, qubits);
+            printState(myQubits, qubits);
+        }
+        else if (choice == 5) {
+            printState(myQubits, qubits);
+        }
+        else if (choice == 0) {
             running = false;
             std::cout << "Exiting quantum simulator...\n";
-            }
-         else {
+            break;
+        }
+        else {
             std::cout << "Unknown option, try again.\n";
         }
     }
