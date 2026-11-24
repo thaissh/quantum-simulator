@@ -174,7 +174,6 @@ int main() {
         std::cout << "Choose option: \n";
 
         int choice;
-        std::cin >> choice;
         
         if (!(std::cin >> choice)) {
             std::cout << "Invalid input.";
