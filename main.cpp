@@ -185,7 +185,12 @@ int main() {
         if (choice >= 1 && choice <= 3) {
             int target;
             std::cout << "Enter target qubit index (0 to " << qubits - 1 << "): ";
-            std::cin >> target;
+            if (!(std::cin >> target)) {
+                std::cout << "Error: please enter a valid integer index!\n";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
             if (target < 0 || target >= qubits) {
                 std::cout << "Invalid qubit index!\n";
                 continue;
@@ -202,9 +207,19 @@ int main() {
         else if (choice == 4) {
             int control, target;
             std::cout << "Enter control qubit index (0 to " << qubits - 1 << "): ";
-            std::cin >> control;
+            if (!(std::cin >> control)) {
+                std::cout << "Error: please enter a valid integer index\n";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
             std::cout << "Enter target qubit index (0 to " << qubits - 1 << "): ";
-            std::cin >> target;
+            if (!(std::cin >> target)) {
+                std::cout << "Error: please enter a valid integer index\n";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
             if (control < 0 || control >= qubits || target < 0 || target >= qubits || control == target) {
                 std::cout << "Invalid qubit indeces\n";
                 continue;
